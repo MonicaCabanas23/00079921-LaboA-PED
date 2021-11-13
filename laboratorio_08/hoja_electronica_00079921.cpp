@@ -67,20 +67,24 @@ void Spreadsheet::menu(){
     bool keep = true; 
 
     while (keep){
-        cout << "\tHOJA ELECTRONICA ";
-        cout << "\n1. Insertar numero \n2.Sumar una columna \n3. Imprimir \n4. Salir";
+        cout << "\n\tHOJA ELECTRONICA ";
+        cout << "\n1. Insertar numero \n2. Sumar una columna \n3. Imprimir \n4. Salir";
         cout << "\nSu opcion: "; cin >> option; 
         switch (option){
             case 1:
                 cout << "\nDigite el numero a insertar: "; cin >> num; 
-                cout << "\nNumero de fila: "; cin >> row; 
-                cout << "\nNumero de columna: "; cin >> column; 
+                do{
+                    cout << "\nNumero de fila: "; cin >> row; 
+                    cout << "\nNumero de columna: "; cin >> column; 
+                } while (row > rows || row <= 0 || column > columns || column <= 0);
                 insert (num, row, column);
                 cout << "Dato insertado con exito! "; 
                 break;
             case 2: 
-                cout << "\nColumna a sumar: "; cin >> column; 
-                //cout << "La suma es: " << addition (column);
+                do{
+                    cout << "\nColumna a sumar: "; cin >> column; 
+                } while (column > columns || columns < 0);
+                cout << "La suma es: " << addition (column);
                 break; 
             case 3: 
                 print();
@@ -97,31 +101,34 @@ void Spreadsheet::menu(){
     cout << "\nHa salido exitosamente del menu! ";
 }
 void Spreadsheet::insert(int data, int row_num, int column_num){
-    node *newNode = new node, *aux_columns, *aux_rows;
-    aux_columns = aux_rows = P;
-
-    newNode->data = data;
-    newNode->row_num = row_num;
-    newNode->column_num = column_num;
+    node *newNode = new node, *auxC, *auxR;
+    auxC = auxR = P;
 
     for (int i = 1; i <= column_num; i++) //locating in the exact column
-        aux_columns = aux_columns->next_column;
-    cout << "\nnumero de columna en la que se encuentra: " << aux_columns->column_num;
-    while (aux_columns->next_row->row_num < row_num && aux_columns->next_row->row_num != 0) //positioning before the spotted row
-        aux_columns = aux_columns->next_row;
+        auxC = auxC->next_column;
+    while (auxC->next_row->row_num < row_num && auxC->next_row->row_num != 0) //positioning before the spotted row
+        auxC = auxC->next_row;
 
     for (int i = 1; i <= row_num; i++) //locating in the exact row
-        aux_rows = aux_rows->next_row;
-    cout << "\nnumero de fila en la que se encuentra: " << aux_rows->row_num;
-    while (aux_rows->next_column->column_num < row_num && aux_rows->next_column->column_num != 0)
-        aux_rows = aux_rows->next_column;
+        auxR = auxR->next_row;
+    while (auxR->next_column->column_num < row_num && auxR->next_column->column_num != 0)
+        auxR = auxR->next_column;
 
-    newNode->next_column = aux_rows->next_column;
-    newNode->next_row = aux_columns->next_row;
-    aux_rows->next_column = aux_columns->next_row = newNode;
+    if (auxR->next_column->column_num == column_num && auxC->next_row->row_num == row_num){
+        auxR = auxR->next_column;
+        auxR->data = data;
+    }
+    else {
+        newNode->data = data;
+        newNode->row_num = row_num;
+        newNode->column_num = column_num;
+        newNode->next_column = auxR->next_column;
+        newNode->next_row = auxC->next_row;
+        auxR->next_column = auxC->next_row = newNode;
+    }
 }
 void Spreadsheet::print(void){
-    cout << "La hoja electrónica es:" << endl;
+    cout << "\nLa hoja electrónica es:" << endl;
     node *s = P;
     int i;
 
@@ -135,8 +142,24 @@ void Spreadsheet::print(void){
     }while(s->row_num != 0);
 }
 
+int Spreadsheet::addition(int column){
+    node *auxC = P; 
+    int addition = 0;
+    
+    while (auxC->column_num != column)
+        auxC = auxC->next_column; 
+    do {
+        addition += auxC->data;
+        auxC = auxC->next_row;
+    } while (auxC->row_num != 0);
+    return addition;
+}
+
 int main (void){
-    int rows = 5, columns = 5;
+    int rows = 0, columns = 0;
+    
+    cout << "\nDigite el numero de filas: "; cin >> rows;
+    cout << "\nDigite el numero de columnas: "; cin >> columns;
     Spreadsheet spreadsheetObject(rows, columns);
     spreadsheetObject.menu();
     return 0;
