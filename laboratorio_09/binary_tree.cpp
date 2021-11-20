@@ -50,7 +50,7 @@ void Tree::add (data data, node **t){
 void Tree::in_order (){ //LNR
     node *t = P; 
     if (t){
-        cout << "\nImprimiendo en In Order ";
+        cout << "\n\nImprimiendo en In Order ";
         in_order (t);
     }
     else 
@@ -63,6 +63,45 @@ void Tree::in_order (node *t){
         cout << endl << t->data.id << " " << t->data.name << " " << t->data.surname; 
         in_order (t->right);
     }
+    else return;
+}
+
+void Tree::pre_order(){ // NLR
+    node *t = P; 
+    if (t){
+        cout << "\n\nImprimiendo en Pre Order ";
+        pre_order (t);
+    }
+    else 
+        cout << "\nNo hay datos en el arbol ";
+}
+
+void Tree::pre_order(node *t){
+    if (t){
+        cout << endl << t->data.id << " " << t->data.name << " " << t->data.surname;
+        pre_order(t->left);
+        pre_order(t->right);
+    }
+    else return;
+} 
+
+void Tree::post_order(){
+    node *t = P;
+    if (t){
+        cout << "\n\nImprimiendo en Post Order ";
+        post_order (t);
+    }
+    else 
+        cout << "\nNo hay datos en el arbol ";
+}
+
+void Tree::post_order(node *t){
+    if (t){
+        post_order(t->left);
+        post_order(t->right);
+        cout << endl << t->data.id << " " << t->data.name << " " << t->data.surname;
+    }
+    else return;
 }
 
 int main (void){
@@ -82,5 +121,7 @@ int main (void){
             exit = true; 
     }
     object.in_order();
+    object.pre_order();
+    object.post_order();
     return 0;
 }
